@@ -1,7 +1,7 @@
 # -*-coding:'utf8'-*-
 
 import mysql.connector
-from functions import welcome, choose_cat
+from functions import welcome, choose_cat, choose_food
 from classes import Datab
 
 
@@ -15,11 +15,11 @@ while choice:
     if choice == 1:
         choice = choose_cat(choice)
 
-    print(choice)
+        datab = Datab(choice)
 
-    datab = Datab(choice)
-
-    datab.print_to_screen()
+        datab.print_products()
+        choice == choose_food(choice)
+        datab.print_substituted()
 
 
 print('Au revoir!')

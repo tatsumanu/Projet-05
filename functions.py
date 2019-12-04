@@ -19,17 +19,29 @@ def welcome(choice):
 
 def choose_cat(choice):
 
-    possibilities = ['1', '2', '3', '4', '5', '6']
+    possibilities = ['1', '2', '3', '4', '5']
 
     print("Sélectionnez la catégorie de l'aliment:\n\
-    1/ gateaux   2/ boisson   3/ pizzas   4/ yaourt\
-   5/ fromage   6/ surgeles")
+    1/ gateau   2/ soda   3/ pizza   4/ yaourt   5/ pate a tartiner")
 
-    choice = input("Votre choix (1 à 6)?")
+    choice = input("Votre choix (1 à 5)?")
 
     while choice not in possibilities:
         print("Votre entrée n'est pas valide!")
-        choice = input("Votre choix (1 / 2)?")     
+        choice = input("Votre choix (1 à 5)?")     
 
     return int(choice)
 
+
+def choose_food(choice):
+
+    possibilities = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+
+    choice = input("\nSélectionnez l'aliment que vous voulez\
+ remplacer (1 à 10): ")
+
+    while choice not in possibilities:
+        print("Votre entrée n'est pas valide!")
+        choice = input("Votre choix (1 à 10)?")     
+
+    return int(choice)
