@@ -4,6 +4,7 @@ import requests
 import json
 from mysql import connector
 import time
+from tqdm import tqdm
 
 t1 = time.time()
 
@@ -19,7 +20,7 @@ categories = ['gateau', 'soda', 'pizza', 'yaourt',
               'pate a tartiner']
 
 
-for cat in categories:
+for cat in tqdm(categories):
 
     res = []
 

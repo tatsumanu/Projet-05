@@ -1,20 +1,21 @@
 
 def welcome(choice):
 
-    possibilities = ['1', '2']
+    possibilities = ['1', '2', '3']
 
     print("\nBienvenue dans l'application qui vous aide à mieux manger!!\
         \nQue souhaitez-vous faire?\n\
         1/ Choisir un aliment à remplacer\n\
-        2/ Consulter mes aliments substitués")
+        2/ Consulter mes aliments substitués\n\
+        3/ Quitter\n")
 
-    choice = input("Votre choix (1 / 2)?")
+    choice = input("Votre choix (1, 2 ou 3)?")
 
     while choice not in possibilities:
         print("Votre entrée n'est pas valide!")
-        choice = input("Votre choix (1 / 2)?")
+        choice = input("Votre choix (1, 2 ou 3)?")
 
-    return int(choice)
+    return int(choice) if choice != '3' else 0
 
 
 def choose_cat(choice):
@@ -42,6 +43,38 @@ def choose_food(choice):
 
     while choice not in possibilities:
         print("Votre entrée n'est pas valide!")
-        choice = input("Votre choix (1 à 10)?")     
+        choice = input("Votre choix (1 à 10) ?")
+
+    return int(choice)
+
+
+def save_food(choice):
+
+    possibilities = ['1', '2']
+
+    print("\nQue souhaitez-vous faire?\n\
+        1/ Enregistrer ce substitut\n\
+        2/ Retourner au menu principal")
+
+    choice = input("Votre choix (1 ou 2)?")
+
+    while choice not in possibilities:
+        print("Votre entrée n'est pas valide!")
+        choice = input("Votre choix (1 ou 2) ?")
+
+    return int(choice)
+
+
+def search_sub(choice):
+
+    possibilities = ['1', '2']
+
+    print("\n1/ Retourner au menu principal")
+
+    choice = input("?")
+
+    while choice not in possibilities:
+        print("Votre entrée n'est pas valide!")
+        choice = input("?")
 
     return int(choice)
