@@ -18,11 +18,17 @@ class Datab:
     def print_products(self):
         query_cat = ("SELECT DISTINCT name, brand, nutri_grade FROM food "
                      "WHERE category = %s"
-                     "LIMIT 10")
+                     "LIMIT 100")
         self.cursor.execute(query_cat, (self.cat,))
-        for i, (name, brand, nutri_grade) in enumerate(self.cursor):
+        res = []
+        for (name, brand, nutri_grade) in self.cursor:
+            res.append((name, brand, nutri_grade))
+        prod = []
+        for j in range(10):
+            prod.append((j+1, choice(res)))
+        for elt in prod:
             print("\t{}/ {} - marque: {} -\
- nutri-score: {}".format(i+1, name, brand, nutri_grade))
+ nutri-score: {}".format(elt[0], elt[1][0], elt[1][1], elt[1][2]))
 
     def print_substituted(self):
         res = []

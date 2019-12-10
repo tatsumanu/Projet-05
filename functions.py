@@ -39,7 +39,7 @@ def choose_food(choice):
     possibilities = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
     choice = input("\nSélectionnez l'aliment que vous voulez\
- remplacer (1 à 10): ")
+ remplacer (1 à 10) - (11) pour une autre selection: ")
 
     while choice not in possibilities:
         print("Votre entrée n'est pas valide!")

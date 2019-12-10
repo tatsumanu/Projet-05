@@ -26,6 +26,5 @@ while choice:
         datab = Datab()
         datab.search_substituted()
         choice = search_sub(choice)
-        
 
 print('Au revoir!')
