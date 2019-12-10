@@ -1,26 +1,32 @@
 # Projet 05
+-----------
 
--> Il s'agit de créer un programme qui interagirait avec la base Open Food Facts pour en récupérer les aliments, les comparer et proposer à l'utilisateur un substitut plus sain à l'aliment qui lui fait envie.
+-> Il s'agit de créer un programme qui interagit avec la base Open Food Facts pour en récupérer les aliments, les comparer et proposer à l'utilisateur un substitut plus sain à l'aliment qui lui fait envie.
 
--> Description du parcours utilisateur:
+Le projet comprend:
 
-L'utilisateur est sur le terminal. Ce dernier lui affiche les choix suivants :
-
-1 - Quel aliment souhaitez-vous remplacer ?
-2 - Retrouver mes aliments substitués.
-
-L'utilisateur sélectionne 1. Le programme pose les questions suivantes à l'utilisateur et ce dernier sélectionne les réponses :
-
-* Sélectionnez la catégorie. [Plusieurs propositions associées à un chiffre. L'utilisateur entre le chiffre correspondant et appuie sur entrée]
-* Sélectionnez l'aliment. [Plusieurs propositions associées à un chiffre. L'utilisateur entre le chiffre correspondant à l'aliment choisi et appuie sur entrée]
-* Le programme propose un substitut, sa description, un magasin ou l'acheter (le cas échéant) et un lien vers la page d'Open Food Facts concernant cet aliment.
-* L'utilisateur a alors la possibilité d'enregistrer le résultat dans la base de données.
+ - Une base de données mysql 'openfoodfacts' avec une table 'food'
  
-
--> Fonctionnalités:
-
-* Recherche d'aliments dans la base Open Food Facts.
-* L'utilisateur interagit avec le programme dans le terminal, mais si vous souhaitez développer une interface graphique vous pouvez,
-* Si l'utilisateur entre un caractère qui n'est pas un chiffre, le programme doit lui répéter la question,
-* La recherche doit s'effectuer sur une base MySql.
+ - Un script python d'alimentation de la base de données: 
+ 
+       * le programme adresse des requêtes à l'API du site internet d'Openfoodfacts
+       
+       * le programme effectue un tri dans les réponses obtenues (au format JSON) et gère les erreurs dans les réponses
+       
+       * il alimente la table 'food' de la base de données 'openfoodfacts'
+       
+ - Le programme principal, destiné à l'utilisateur final: 
+ 
+       * un menu accueille l'utilisateur et lui laisse le choix entre choisir un aliment à remplacer et consulter les aliments substitués déjà enregistrés
+       
+       * le premier choix le conduit ensuite à définir une catégorie d'aliment à rechercher
+       
+       * le programme affiche un échantillon aléatoire de 10 produits de cette catégorie. L'utilisateur doit saisir le chiffre correspondant au produit qu'il désire substituer
+       
+       * le programme effectue une recherche dans la base de données et renvoie un produit de la même catégorie mais présentant un score nutritionnel plus avantageux que celui choisi par l'utilisateur. Il donne la description complète de celui-ci avec un lien vers le site internet d'openfoodfacts
+       
+       * l'utilisateur a la possibilité d'enregistrer ce produit proposé par le programme dans ses produits substitués
+       
+       * l'utilisateur revient ensuite au menu principal. Il peut à nouveau rechercher un aliment à substituer, consulter ses produits déjà substitués ou quitter le programme
+ 
  
