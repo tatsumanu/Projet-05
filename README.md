@@ -1,32 +1,17 @@
 # Projet 05
 -----------
 
--> Il s'agit de créer un programme qui interagit avec la base Open Food Facts pour en récupérer les aliments, les comparer et proposer à l'utilisateur un substitut plus sain à l'aliment qui lui fait envie.
+The main purpose of this project is to interact with the Openfoodfacts base to find healthier substitute for the user.
 
-Le projet comprend:
+First of all, you will need mysql database so, if not already done, download and install mysql from the official website. 
+Once done, the program requires a database 'Openfoodfacts' with a unique table we called 'food'. Take it easy as we have already wrote the creation's script for this: just follow this (ADD) and this will be done!
 
- - Une base de données mysql 'openfoodfacts' avec une table 'food'
- 
- - Un script python d'alimentation de la base de données: 
- 
-       * le programme adresse des requêtes à l'API du site internet d'Openfoodfacts
-       
-       * le programme effectue un tri dans les réponses obtenues (au format JSON) et gère les erreurs dans les réponses
-       
-       * il alimente la table 'food' de la base de données 'openfoodfacts'
-       
- - Le programme principal, destiné à l'utilisateur final: 
- 
-       * un menu accueille l'utilisateur et lui laisse le choix entre choisir un aliment à remplacer et consulter les aliments substitués déjà enregistrés
-       
-       * le premier choix le conduit ensuite à définir une catégorie d'aliment à rechercher
-       
-       * le programme affiche un échantillon aléatoire de 10 produits de cette catégorie. L'utilisateur doit saisir le chiffre correspondant au produit qu'il désire substituer
-       
-       * le programme effectue une recherche dans la base de données et renvoie un produit de la même catégorie mais présentant un score nutritionnel plus avantageux que celui choisi par l'utilisateur. Il donne la description complète de celui-ci avec un lien vers le site internet d'openfoodfacts
-       
-       * l'utilisateur a la possibilité d'enregistrer ce produit proposé par le programme dans ses produits substitués
-       
-       * l'utilisateur revient ensuite au menu principal. Il peut à nouveau rechercher un aliment à substituer, consulter ses produits déjà substitués ou quitter le programme
- 
- 
+Next, follow the requirements.txt for your virtual environnement. We used Python 3.7.
+
+You will need the database to be populated so, simply run the 'fill_db.py' script.
+
+Once done, you're ready to play the program by running 'main.py'.
+
+Enjoy!
+
+Nota bene: Don't mention it before but please that inside the application, menu and all the stuff will be wrote in french...
