@@ -31,6 +31,9 @@ for cat in tqdm(categories):
         'tag_0': cat,
         'tag_contains_0': 'contains',
         'tagtype_0': 'categories',
+        'tag_1': 'fr',
+        'tag_contains_1': 'contains',
+        'tagtype_1': 'lang',
         'sort_by': 'unique_scans_n',
         'page_size': 1000,
         'action': 'process',
@@ -65,4 +68,3 @@ cnx.commit()
 
 cursor.close()
 cnx.close()
-
