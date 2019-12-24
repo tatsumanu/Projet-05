@@ -11,9 +11,6 @@ class Datab:
      data and print them to the screen. """
 
     def __init__(self, cat=0, nutri='a', answer=[]):
-        self.categories = ['gateau', 'soda', 'pizza', 'yaourt',
-                           'pate a tartiner']
-        self.cat = self.categories[cat-1]
         self.nutri = nutri
         self.answer = answer
         self.cnx = connector.connect(user='student', host='localhost',
@@ -25,6 +22,12 @@ class Datab:
  magasins: {}\n\n\tPour votre complète information, voici la liste\
  des ingrédients:\n\n\t{}\n\n\tVous pouvez retrouver toutes ces\
  informations sur la page internet: {}"
+        search_cat = ("SELECT DISTINCT category FROM food")
+        self.categories = []
+        self.cursor.execute(search_cat,)
+        for elt in self.cursor:
+            self.categories += elt
+        self.cat = self.categories[cat-1]
 
     def print_products(self):
         """ Query the DB and return 10 products of the selected category.
@@ -114,20 +117,22 @@ class Datab:
             self.cursor.execute(query_save, (self.answer[6],))
         except IndexError:
             query_save_web = ("INSERT INTO food (name, brand, nutri_grade,\
- store, link, ingredients, substituted) VALUES (%s, %s, %s, %s, %s, %s, %s)")
+ store, link, ingredients, substituted, category) VALUES (%s, %s, %s, %s,\
+ %s, %s, %s, %s)")
             self.cursor.execute(query_save_web,
                                 (self.answer[0], self.answer[1],
                                  self.answer[2], self.answer[3],
-                                 self.answer[4], self.answer[5], 'YES'))
+                                 self.answer[4], self.answer[5],
+                                 'YES', self.cat))
         print("\n\tL'article a été enregistré avec succès!\n")
         self.cnx.commit()
 
     def search_saved(self):
-        """ This looks inside the database for previously saved products.
+        """ Looks inside the database for previously saved products.
         An error message is printed if there isn't any. """
 
         res = []
-        query_search = ("SELECT name, brand, nutri_grade, store,\
+        query_search = ("SELECT DISTINCT name, brand, nutri_grade, store,\
                         product_id FROM food "
                         "WHERE substituted = %s")
         self.cursor.execute(query_search, ('YES',))
