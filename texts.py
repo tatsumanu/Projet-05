@@ -3,6 +3,11 @@
 header = '### OPENFOODFACTS & OPENCLASSROOM, ensembles pour une\
  application qui vous veut du bien !! ###'
 
+sub = "Voici un substitut plus sain au produit\
+ selectionné: {}, de la marque {}, nutri-score: {}. Disponible dans\
+ les magasins: {}. Liste des ingrédients: {} Vous pouvez retrouver toutes ces\
+ informations sur la page internet:{}"
+
 end = "Press 'q' to exit | Parcours Python - projet 05\
  - Conçu par Emmanuel Nocquet (Openclassroom student)"
 

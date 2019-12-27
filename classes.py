@@ -1,7 +1,6 @@
-
 from mysql import connector
 from random import choice
-from texts import welcome, comments, food
+from texts import welcome, comments, food, sub
 import requests
 import json
 
@@ -17,10 +16,6 @@ class Datab:
         self.cnx = connector.connect(user='student', host='localhost',
                                      database='openfoodfacts')
         self.cursor = self.cnx.cursor(buffered=True)
-        self.sub = "Voici un substitut plus sain au produit\
- selectionné: {}, de la marque {}, nutri-score: {}. Disponible dans\
- les magasins: {}. Liste des ingrédients: {} Vous pouvez retrouver toutes ces\
- informations sur la page internet:{}"
         search_cat = ("SELECT DISTINCT category FROM food")
         self.categories = []
         self.cursor.execute(search_cat,)
@@ -66,9 +61,9 @@ class Datab:
         self.answer = choice(res)
         self.answer = list(self.answer)
         solution = ""
-        solution = self.sub.format(self.answer[0], self.answer[1],
-                                   self.answer[2], self.answer[3],
-                                   self.answer[5], self.answer[4])
+        solution = sub.format(self.answer[0], self.answer[1],
+                              self.answer[2], self.answer[3],
+                              self.answer[5], self.answer[4])
         return solution
 
     def search_internet(self):
@@ -99,10 +94,10 @@ class Datab:
             for i in data:
                 if not elt.get(i):
                     elt[i] = 'Non disponible'
-            res = self.sub.format(elt['product_name'], elt['brands'],
-                                  elt['nutrition_grade_fr'],
-                                  elt['stores'], elt['ingredients_text'],
-                                  elt['url'])
+            res = sub.format(elt['product_name'], elt['brands'],
+                             elt['nutrition_grade_fr'],
+                             elt['stores'], elt['ingredients_text'],
+                             elt['url'])
             self.answer = [elt['product_name'], elt['brands'],
                            elt['nutrition_grade_fr'], elt['stores'],
                            elt['url'], elt['ingredients_text']]

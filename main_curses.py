@@ -1,3 +1,5 @@
+# -*-coding:'utf8'-*-
+
 import curses
 from texts import welcome, header, comments, food, end
 from classes import Datab, Menu
