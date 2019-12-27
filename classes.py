@@ -1,6 +1,7 @@
 
 from mysql import connector
 from random import choice
+from texts import welcome, comments, food
 import requests
 import json
 
@@ -16,12 +17,10 @@ class Datab:
         self.cnx = connector.connect(user='student', host='localhost',
                                      database='openfoodfacts')
         self.cursor = self.cnx.cursor(buffered=True)
-        self.sub = "\nNous vous proposons un substitut plus sain au produit\
- selectionné, il s'agit de l'article:\n\n\t{}, de la marque {} dont le\
- nutri-score est de: {}\n\n\tCe produit est distribué dans les\
- magasins: {}\n\n\tPour votre complète information, voici la liste\
- des ingrédients:\n\n\t{}\n\n\tVous pouvez retrouver toutes ces\
- informations sur la page internet: {}"
+        self.sub = "Voici un substitut plus sain au produit\
+ selectionné: {}, de la marque {}, nutri-score: {}. Disponible dans\
+ les magasins: {}. Liste des ingrédients: {} Vous pouvez retrouver toutes ces\
+ informations sur la page internet:{}"
         search_cat = ("SELECT DISTINCT category FROM food")
         self.categories = []
         self.cursor.execute(search_cat,)
@@ -43,9 +42,11 @@ class Datab:
         prod = []
         for j in range(10):
             prod.append((j+1, choice(res)))
+        solution = []
         for elt in prod:
-            print("\t{}/ {} - marque: {} -\
+            solution.append("\t{}/ {} - marque: {} -\
  nutri-score: {}".format(elt[0], elt[1][0], elt[1][1], elt[1][2]))
+        return solution
 
     def print_substituted(self):
         """ Query DB for a better product in the selected category. Print
@@ -64,9 +65,11 @@ class Datab:
             self.nutri = chr(ord(self.nutri)+1)
         self.answer = choice(res)
         self.answer = list(self.answer)
-        print(self.sub.format(self.answer[0], self.answer[1],
-                              self.answer[2], self.answer[3],
-                              self.answer[5], self.answer[4]))
+        solution = ""
+        solution = self.sub.format(self.answer[0], self.answer[1],
+                                   self.answer[2], self.answer[3],
+                                   self.answer[5], self.answer[4])
+        return solution
 
     def search_internet(self):
         """ Allow the user to look for an other substitute directly on
@@ -89,20 +92,21 @@ class Datab:
         }
         data = ['product_name', 'brands', 'nutrition_grade_fr', 'url',
                 'stores', 'ingredients_text']
-
+        res = ""
         response = requests.get("https://fr.openfoodfacts.org/cgi/search.pl?",
                                 params=payload)
         for elt in response.json()['products']:
             for i in data:
                 if not elt.get(i):
                     elt[i] = 'Non disponible'
-            print(self.sub.format(elt['product_name'], elt['brands'],
+            res = self.sub.format(elt['product_name'], elt['brands'],
                                   elt['nutrition_grade_fr'],
                                   elt['stores'], elt['ingredients_text'],
-                                  elt['url']))
+                                  elt['url'])
             self.answer = [elt['product_name'], elt['brands'],
                            elt['nutrition_grade_fr'], elt['stores'],
                            elt['url'], elt['ingredients_text']]
+        return res
 
     def save_substituted(self):
         """ As the user chooses to save the substituted product, we save
@@ -124,8 +128,8 @@ class Datab:
                                  self.answer[2], self.answer[3],
                                  self.answer[4], self.answer[5],
                                  'YES', self.cat))
-        print("\n\tL'article a été enregistré avec succès!\n")
         self.cnx.commit()
+        return "### L'article a été enregistré avec succès!"
 
     def search_saved(self):
         """ Looks inside the database for previously saved products.
@@ -140,18 +144,88 @@ class Datab:
                 product_id) in enumerate(self.cursor):
             res.append((i+1, name, brand, nutri_grade, store, product_id))
         if res:
-            print("\nVoici les aliments substitués que vous avez\
- enregistré:\n\n")
+            solution = ["Voici les aliments substitués que vous avez\
+ enregistré:"]
             for elt in res:
-                print("\t{}/ {} - marque: {} -\
+                solution.append("\t{}/ {} - marque: {} -\
  nutri-score: {} - magasin: {}\n".format(elt[0], elt[1], elt[2],
                                          elt[3], elt[4]))
+            print(solution)
+            return solution
         else:
-            print("\nVous n'avez aucun produit substitué enregistré\
- dans notre base de donnée!")
+            return ["Vous n'avez aucun produit substitué enregistré!"]
 
     def close_cnx(self):
         """ Closes mysql connector cursor and connexion with DB. """
 
         self.cursor.close()
         self.cnx.close()
+
+
+class Menu(Datab):
+    """ Create a Menu object that will handle relations between the
+    database and the user of the application. The app_menu method
+    is called in every loop of the main function after checking if
+    a key has been pressed, changing his parameters as the user
+    makes his choices """
+
+    def __init__(self, text="", choice=""):
+        Datab.__init__(self)
+        self.text = welcome
+        self.choice = choice
+        self.possibilities = ['1', '2']
+        self.step = 1
+        self.comments = comments[0]
+
+    def app_menu(self):
+        if self.step == 1:
+            # welcome menu
+            if self.choice == '1':
+                # choosing products's category
+                self.step = 2
+                self.text = []
+                self.comments = comments[3]
+                self.possibilities = [str(i) for i in range(1, len(self.categories)+1)]
+                for elt in list(zip(self.possibilities, self.categories)):
+                    i, j = elt
+                    self.text.append(("{}/ {}".format(i, j)))
+            elif self.choice == '2':
+                # going to already saved products
+                self.step = 9
+                self.text = self.search_saved()
+                self.comments = comments[2]
+                self.possibilities = ['1']
+        elif self.step == 2:
+            # now printing random products from the choosen category
+            if self.choice in self.possibilities:
+                self.step = 3
+                self.comments = food
+                self.cat = self.categories[int(self.choice)-1]
+                self.text = self.print_products()
+                self.possibilities = [str(i) for i in range(10)]
+        elif self.step == 3:
+            # now heading to a healthier product
+            self.step = 4
+            self.text = self.print_substituted()
+            self.possibilities = [str(i) for i in range(1, 4)]
+            self.comments = comments[1]
+        elif self.step == 4:
+            # choose between saving, API live search, and back to main menu
+            if self.choice == '1':
+                # saving result in database
+                self.comments += self.save_substituted()
+            elif self.choice == '2':
+                # looking for an alternative from internet
+                self.text = self.search_internet()
+                self.comments = comments[1]
+            elif self.choice == '3':
+                # back to main menu
+                self.text = welcome
+                self.comments = comments[0]
+                self.step = 1
+        elif self.step == 9:
+            # back to main menu
+            if self.choice in self.possibilities:
+                self.text = welcome
+                self.comments = comments[0]
+                self.step = 1
