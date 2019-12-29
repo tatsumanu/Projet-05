@@ -1,4 +1,4 @@
-""" file with all the text menu for the main programm """
+""" file with all the text for the main program and classes """
 
 header = '### OPENFOODFACTS & OPENCLASSROOM, ensembles pour une\
  application qui vous veut du bien !! ###'

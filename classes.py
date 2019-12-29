@@ -13,8 +13,12 @@ class Datab:
     def __init__(self, cat=0, nutri='a', answer=[]):
         self.nutri = nutri
         self.answer = answer
-        self.cnx = connector.connect(user='student', host='localhost',
-                                     database='openfoodfacts')
+        try:
+            self.cnx = connector.connect(user='student', host='localhost',
+                                         database='openfoodfacts')
+            print("Connexion established with database")
+        except connector.Error as err:
+            print(err)
         self.cursor = self.cnx.cursor(buffered=True)
         search_cat = ("SELECT DISTINCT category FROM food")
         self.categories = []
@@ -152,7 +156,6 @@ class Datab:
 
     def close_cnx(self):
         """ Closes mysql connector cursor and connexion with DB. """
-
         self.cursor.close()
         self.cnx.close()
 

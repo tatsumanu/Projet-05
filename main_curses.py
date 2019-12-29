@@ -30,7 +30,7 @@ def draw_menu(stdscr):
         # Refresh the screen
         stdscr.refresh()
 
-        # Declaration of strings
+        # Some variables
         title = header[:width-1]
         subtitle = menu.text
         keystr = "Votre choix: {}".format(k)[:width-1]
@@ -91,6 +91,8 @@ def draw_menu(stdscr):
         k = chr(k)
         menu.choice = k
         menu.app_menu()
+
+    # closes mysql connexion
     db.close_cnx()
 
 
