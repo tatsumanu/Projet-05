@@ -1,8 +1,9 @@
 # -*-coding:'utf8'-*-
 
 import curses
-from texts import welcome, header, comments, food, end
-from classes import Datab, Menu
+from constants import header, end
+from database_class import Database
+from menu_class import Menu
 from math import ceil
 
 
@@ -40,17 +41,21 @@ def draw_menu(stdscr):
 
         # Centering calculations
         start_x_title = int((width // 2) - (len(title) // 2) - len(title) % 2)
-        start_x_keystr = int((width // 2) - (len(keystr) // 2) - len(keystr) % 2)
+        start_x_keystr = int(
+            (width // 2) - (len(keystr) // 2) - len(keystr) % 2
+            )
         start_y = int((height // 2) - 2)
 
-        # Rendering some text
+        # Printing comments
         whstr = menu.comments
         stdscr.addstr(0, 0, whstr, curses.color_pair(1))
 
         # Render status bar
         stdscr.attron(curses.color_pair(3))
         stdscr.addstr(height-1, 0, statusbarstr)
-        stdscr.addstr(height-1, len(statusbarstr), " " * (width - len(statusbarstr) - 1))
+        stdscr.addstr(
+            height-1, len(statusbarstr), " " * (width - len(statusbarstr) - 1)
+            )
         stdscr.attroff(curses.color_pair(3))
 
         # Turning on attributes for title
@@ -74,13 +79,18 @@ def draw_menu(stdscr):
             box = curses.newwin(rows + 2, columns + 2, 7, 1)
             box.box()
             for row in range(1, rows+1):
-                box.addstr(row, 1, subtitle[(row*columns)-columns:(row*columns)])
+                box.addstr(
+                    row, 1,
+                    subtitle[(row*columns)-columns:(row*columns)]
+                    )
                 box.refresh()
         else:
             # other cases
             for idx, row in enumerate(subtitle):
                 start_y = height//2 - len(subtitle)//2 + idx
-                start_x_subtitle = int((width // 2) - (len(row) // 2) - len(row) % 2)
+                start_x_subtitle = int(
+                    (width // 2) - (len(row) // 2) - len(row) % 2
+                    )
                 stdscr.addstr(start_y - 1, start_x_subtitle, row[:width-1])
 
         stdscr.addstr(start_y + 5, (width // 2) - 2, '-' * 4)
@@ -102,7 +112,7 @@ def main():
 
 if __name__ == "__main__":
 
-    # creating Menu and Database object before launching app
-    db = Datab()
-    menu = Menu()
+    # creating Menu object before launching app
+    db = Database()
+    menu = Menu(db)
     main()

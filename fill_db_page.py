@@ -1,11 +1,54 @@
 # -*-coding:'utf8'-*-
 
 import requests
-import json
 import argparse
 import time
 from tqdm import tqdm
 from mysql import connector
+from mysql.connector import errorcode
+
+tables = {}
+tables['category'] = (
+    "CREATE TABLE category ("
+    " category_id INT AUTO_INCREMENT,"
+    " category VARCHAR(15),"
+    " PRIMARY KEY (category_id)"
+    ") ENGINE=INNODB"
+)
+
+tables['substituted'] = (
+    "CREATE TABLE substituted ("
+    " substituted_id INT AUTO_INCREMENT,"
+    " name TEXT,"
+    " brand TEXT,"
+    " nutri_grade VARCHAR(5),"
+    " store TEXT,"
+    " link TEXT,"
+    " ingredients TEXT,"
+    " PRIMARY KEY (substituted_id)"
+    ") ENGINE=INNODB"
+)
+
+tables['food'] = (
+    "CREATE TABLE `openfoodfacts`.`food` ("
+    " `product_id` INT NOT NULL AUTO_INCREMENT,"
+    " `name` TEXT NULL,"
+    " `brand` TEXT NULL,"
+    " `nutri_grade` VARCHAR(5) NULL,"
+    " `ingredients` TEXT NULL,"
+    " `store` TEXT NULL,"
+    " `link` TEXT NULL,"
+    " `cat_id` INT NULL,"
+    " PRIMARY KEY (`product_id`),"
+    " INDEX `categories_fk_idx` (`cat_id`) VISIBLE,"
+    " CONSTRAINT `categories_fk`"
+    "     FOREIGN KEY (`cat_id`)"
+    "     REFERENCES `openfoodfacts`.`category` (`category_id`)"
+    "     ON DELETE CASCADE"
+    "     ON UPDATE NO ACTION)"
+    " ENGINE = InnoDB"
+    " DEFAULT CHARACTER SET = utf8"
+)
 
 
 def main():
@@ -32,21 +75,62 @@ def main():
     fill_db(nb_page, page_size, categories)
 
 
-def fill_db(nb_page, page_size, categories):
+def create_database(cursor):
+    try:
+        cursor.execute(
+            "CREATE DATABASE {} DEFAULT CHARACTER SET\
+ 'utf8'".format('openfoodfacts'))
+    except connector.Error as err:
+        print("Failed creating database: {}".format(err))
+        exit(1)
 
-    # starting point
-    t1 = time.time()
+
+def fill_db(nb_page, page_size, categories):
 
     # trying to connect to mysql database
     try:
-        cnx = connector.connect(user='student', host='localhost',
-                                database='openfoodfacts')
+        cnx = connector.connect(user='student', host='localhost')
+        # creating cursor object
+        cursor = cnx.cursor(buffered=True)
         print("Connexion established with database")
     except connector.Error as err:
         print(err)
 
-    # creating cursor object
-    cursor = cnx.cursor(buffered=True)
+    try:
+        cursor.execute("USE {}".format('openfoodfacts'))
+    except connector.Error as err:
+        print("Database {} does not exists.".format('openfoodfacts'))
+        if err.errno == errorcode.ER_BAD_DB_ERROR:
+            create_database(cursor)
+            print("Database {} created successfully.".format('openfoodfacts'))
+            cnx.database = 'openfoodfacts'
+        else:
+            print(err)
+            exit(1)
+
+    for table_name in tables:
+        table_description = tables[table_name]
+        try:
+            print("Creating table {}: ".format(table_name), end='')
+            cursor.execute(table_description)
+        except connector.Error as err:
+            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                print("already exists.")
+            else:
+                print(err.msg)
+        else:
+            print("OK")
+
+    # starting point
+    t1 = time.time()
+
+    # inserting categories in category table
+    add_category = "INSERT INTO category (category) VALUES (%s)"
+    for cat in categories:
+        cursor.execute(add_category, (cat,))
+        print(cat)
+
+    cnx.commit()
 
     # main loop iterating through the categories of food given to the script
     cpt = 1
@@ -80,10 +164,10 @@ def fill_db(nb_page, page_size, categories):
             p = (tuple(elt.get(i, None) for i in data) for elt in products)
 
             add_product = "INSERT INTO food (name, brand, nutri_grade, link,\
-    store, ingredients, category) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    store, ingredients, cat_id) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 
             for elt in p:
-                elt += cat,
+                elt += (categories.index(cat)+1),
                 cursor.execute(add_product, elt)
         cpt += 1
 

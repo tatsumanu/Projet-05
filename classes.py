@@ -1,8 +1,8 @@
 from mysql import connector
 from random import choice
-from texts import welcome, comments, food, sub
+from texts import welcome, comments, food, sub, data, query_search
+from texts import query_cat, query_sub, query_save, query_save_web
 import requests
-import json
 
 
 class Datab:
@@ -10,7 +10,7 @@ class Datab:
      program and the database. His methods manage to search the required
      data and print them to the screen. """
 
-    def __init__(self, cat=0, nutri='a', answer=[]):
+    def __init__(self, cat=0, nutri='b', answer=[]):
         self.nutri = nutri
         self.answer = answer
         try:
@@ -31,20 +31,15 @@ class Datab:
         """ Query the DB and return 10 products of the selected category.
         Using the 'choice' function to randomize selection. """
 
-        query_cat = ("SELECT DISTINCT name, brand, nutri_grade FROM food "
-                     "WHERE category = %s"
-                     "LIMIT 100")
         self.cursor.execute(query_cat, (self.cat,))
-        res = []
-        for (name, brand, nutri_grade) in self.cursor:
-            res.append((name, brand, nutri_grade))
-        prod = []
-        for j in range(10):
-            prod.append((j+1, choice(res)))
+        res = [(name, brand, nutri_grade)
+               for (name, brand, nutri_grade) in self.cursor
+               ]
+        result = [((j,) + choice(res)) for j in range(10)]
         solution = []
-        for elt in prod:
+        for elt in result:
             solution.append("\t{}/ {} - marque: {} -\
- nutri-score: {}".format(elt[0], elt[1][0], elt[1][1], elt[1][2]))
+ nutri-score: {}".format(elt[0], elt[1], elt[2], elt[3]))
         return solution
 
     def print_substituted(self):
@@ -52,9 +47,6 @@ class Datab:
          it with informations such as name, brand and ingredients. """
 
         res = []
-        query_sub = ("SELECT name, brand, nutri_grade, store, link,\
-                     ingredients, product_id FROM food "
-                     "WHERE category = %s AND nutri_grade = %s")
         while len(res) < 5:
             self.cursor.execute(query_sub, (self.cat, self.nutri))
             for (name, brand, nutri_grade,
@@ -74,6 +66,7 @@ class Datab:
         """ Allow the user to look for an other substitute directly on
          internet via an API request. Then print it to the screen. """
 
+        res = ""
         payload = {
             'tag_0': self.cat,
             'tag_contains_0': 'contains',
@@ -89,9 +82,6 @@ class Datab:
             'action': 'process',
             'json': 1
         }
-        data = ['product_name', 'brands', 'nutrition_grade_fr', 'url',
-                'stores', 'ingredients_text']
-        res = ""
         response = requests.get("https://fr.openfoodfacts.org/cgi/search.pl?",
                                 params=payload)
         for elt in response.json()['products']:
@@ -115,13 +105,8 @@ class Datab:
 
         try:
             self.answer[6]
-            query_save = ("UPDATE food SET substituted = 'YES' WHERE\
-                        product_id = %s")
             self.cursor.execute(query_save, (self.answer[6],))
         except IndexError:
-            query_save_web = ("INSERT INTO food (name, brand, nutri_grade,\
- store, link, ingredients, substituted, category) VALUES (%s, %s, %s, %s,\
- %s, %s, %s, %s)")
             self.cursor.execute(query_save_web,
                                 (self.answer[0], self.answer[1],
                                  self.answer[2], self.answer[3],
@@ -135,9 +120,6 @@ class Datab:
         An error message is printed if there isn't any. """
 
         res = []
-        query_search = ("SELECT DISTINCT name, brand, nutri_grade, store,\
-                        product_id FROM food "
-                        "WHERE substituted = %s")
         self.cursor.execute(query_search, ('YES',))
         for i, (name, brand, nutri_grade, store,
                 product_id) in enumerate(self.cursor):
@@ -177,53 +159,77 @@ class Menu(Datab):
 
     def app_menu(self):
         if self.step == 1:
-            # welcome menu
-            if self.choice == '1':
-                # choosing products's category
-                self.step = 2
-                self.text = []
-                self.comments = comments[3]
-                self.possibilities = [str(i) for i in range(1, len(self.categories)+1)]
-                for elt in list(zip(self.possibilities, self.categories)):
-                    i, j = elt
-                    self.text.append(("{}/ {}".format(i, j)))
-            elif self.choice == '2':
-                # going to already saved products
-                self.step = 9
-                self.text = self.search_saved()
-                self.comments = comments[2]
-                self.possibilities = ['1']
+            self.menu_step_1()
         elif self.step == 2:
-            # now printing random products from the choosen category
-            if self.choice in self.possibilities:
-                self.step = 3
-                self.comments = food
-                self.cat = self.categories[int(self.choice)-1]
-                self.text = self.print_products()
-                self.possibilities = [str(i) for i in range(10)]
+            self.menu_step_2()
         elif self.step == 3:
-            # now heading to a healthier product
-            self.step = 4
-            self.text = self.print_substituted()
-            self.possibilities = [str(i) for i in range(1, 4)]
-            self.comments = comments[1]
+            self.menu_step_3()
         elif self.step == 4:
-            # choose between saving, API live search, and back to main menu
-            if self.choice == '1':
-                # saving result in database
-                self.comments += self.save_substituted()
-            elif self.choice == '2':
-                # looking for an alternative from internet
-                self.text = self.search_internet()
-                self.comments = comments[1]
-            elif self.choice == '3':
-                # back to main menu
-                self.text = welcome
-                self.comments = comments[0]
-                self.step = 1
-        elif self.step == 9:
+            self.menu_step_4()
+        elif self.step == 5:
+            self.menu_step_5()
+
+    def menu_step_1(self):
+        # welcome menu
+        if self.choice == '1':
+            self.menu_categories()
+        elif self.choice == '2':
+            self.menu_saved_products()
+
+    def menu_step_2(self):
+        # now printing random products from the choosen category
+        if self.choice in self.possibilities:
+            self.step = 3
+            self.comments = food
+            self.cat = self.categories[int(self.choice)-1]
+            self.text = self.print_products()
+            self.possibilities = [str(i) for i in range(10)]
+
+    def menu_step_3(self):
+        # print a healthier product
+        self.step = 4
+        self.text = self.print_substituted()
+        self.possibilities = [str(i) for i in range(1, 4)]
+        self.comments = comments[1]
+
+    def menu_step_4(self):
+        # choose between saving, API live search, and back to main menu
+        if self.choice == '1':
+            # saving result in database
+            self.comments += self.save_substituted()
+        elif self.choice == '2':
+            # looking for an alternative from internet
+            self.text = self.search_internet()
+            self.comments = comments[1]
+        elif self.choice == '3':
             # back to main menu
-            if self.choice in self.possibilities:
-                self.text = welcome
-                self.comments = comments[0]
-                self.step = 1
+            self.text = welcome
+            self.comments = comments[0]
+            self.step = 1
+
+    def menu_step_5(self):
+        # saved products menu
+        if self.choice in self.possibilities:
+            self.text = welcome
+            self.comments = comments[0]
+            self.step = 1
+
+    def menu_categories(self):
+        # choosing products's category
+        self.step = 2
+        self.text = []
+        self.comments = comments[3]
+        self.possibilities = [
+            str(i)
+            for i in range(1, len(self.categories)+1)
+        ]
+        for elt in list(zip(self.possibilities, self.categories)):
+            i, j = elt
+            self.text.append(("{}/ {}".format(i, j)))
+
+    def menu_saved_products(self):
+        # going to already saved products
+        self.step = 5
+        self.text = self.search_saved()
+        self.comments = comments[2]
+        self.possibilities = ['1']

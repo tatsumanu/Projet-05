@@ -1,4 +1,4 @@
-""" file with all the text for the main program and classes """
+""" file with all the constants for the main program and classes """
 
 header = '### OPENFOODFACTS & OPENCLASSROOM, ensembles pour une\
  application qui vous veut du bien !! ###'
@@ -17,14 +17,28 @@ welcome = ["Que souhaitez-vous faire?",
 
 food = "Sélectionnez l'aliment que vous voulez remplacer (1 à 10)"
 
-substitute = ["Enregistrer ce substitut",
-              "Trouver un autre substitut sur internet",
-              "Retourner au menu principal"]
-
-saved = ["Voici les aliments enregistrés dans la base:", "",
-         "Retourner au menu principal"]
-
 comments = ["Bienvenue dans l'application OpenFoodFacts !!!",
-            "(1) Sauvegarder, (2) Rechercher sur internet, (3) Menu principal ",
+            "(1) Sauvegarder, (2) Rechercher sur internet,\
+ (3) Menu principal ",
             " (1) pour Retourner au menu principal",
-            "Choisissez la categorie de l'aliment à remplacer"]
+            "Choisissez la categorie de l'aliment à remplacer",
+            "### L'article a été enregistré avec succès!"]
+
+data = ['product_name', 'brands', 'nutrition_grade_fr', 'url',
+        'stores', 'ingredients_text']
+
+payload = {
+    'tag_0': 'to be changed',
+    'tag_contains_0': 'contains',
+    'tagtype_0': 'categories',
+    'tag_1': 'a',
+    'tag_contains_1': 'contains',
+    'tagtype_1': 'nutrition_grades',
+    'tag_2': 'fr',
+    'tag_contains_2': 'contains',
+    'tagtype_2': 'lang',
+    'sort_by': 'unique_scans_n',
+    'page_size': 20,
+    'action': 'process',
+    'json': 1
+}
