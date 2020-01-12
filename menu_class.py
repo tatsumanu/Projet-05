@@ -148,6 +148,5 @@ class Menu:
                                      elt['nutrition_grade_fr'],
                                      elt['stores'], elt['ingredients_text'],
                                      elt['url']))
-        if self.text == []:
-            return "Nous n'avons trouvé aucun substitut plus sain au\
- produit sélectionné!"
+        self.text = "Nous n'avons trouvé aucun substitut plus sain au\
+ produit sélectionné!" if self.text == [] else self.text

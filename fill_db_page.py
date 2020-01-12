@@ -128,7 +128,6 @@ def fill_db(nb_page, page_size, categories):
     add_category = "INSERT INTO category (category) VALUES (%s)"
     for cat in categories:
         cursor.execute(add_category, (cat,))
-        print(cat)
 
     cnx.commit()
 
@@ -138,6 +137,8 @@ def fill_db(nb_page, page_size, categories):
         print('Collecting products from {} categories \
     in page: {}/{}'.format(len(categories), cpt, nb_page))
         for cat in tqdm(categories):
+
+            url = "https://fr.openfoodfacts.org/cgi/search.pl?"
 
             data = ['product_name', 'brands', 'nutrition_grade_fr', 'url',
                     'stores', 'ingredients_text']
@@ -156,8 +157,7 @@ def fill_db(nb_page, page_size, categories):
                 'json': 1
             }
 
-            response = requests.get("https://fr.openfoodfacts.org/cgi/search.pl?",
-                                    params=payload)
+            response = requests.get(url, params=payload)
 
             products = response.json()['products']
 

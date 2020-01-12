@@ -73,6 +73,7 @@ def draw_menu(stdscr):
         stdscr.addstr(5, (width // 2) - 2, '-' * 4)
 
         if menu.step == 4:
+
             # case of the substituted product
             columns = width-8
             rows = int(ceil(len(subtitle)/columns))
@@ -81,9 +82,10 @@ def draw_menu(stdscr):
             for row in range(1, rows+1):
                 box.addstr(
                     row, 1,
-                    subtitle[(row*columns)-columns:(row*columns)]
+                    subtitle[(row*columns)-columns:row*columns]
                     )
                 box.refresh()
+
         else:
             # other cases
             for idx, row in enumerate(subtitle):

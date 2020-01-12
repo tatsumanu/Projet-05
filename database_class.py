@@ -30,9 +30,9 @@ class Database:
         query_cat = ("SELECT name, brand, nutri_grade FROM food "
                      "JOIN category "
                      "ON food.cat_id = category.category_id "
-                     "WHERE category.category = %s"
+                     "WHERE category.category = %s AND nutri_grade > %s"
                      "LIMIT 100")
-        self.cursor.execute(query_cat, (category,))
+        self.cursor.execute(query_cat, (category, "c"))
         return self.cursor
 
     def search_a_substitute(self, category):
@@ -53,10 +53,14 @@ class Database:
         research, his informations are inserted into the database. """
 
         query_save = ("INSERT INTO substituted (name, brand, nutri_grade,\
- store, ingredients, link) VALUES (%s, %s, %s, %s, %s, %s)")
+ store, link, ingredients) VALUES (%s, %s, %s, %s, %s, %s)")
 
-        self.cursor.execute(query_save, (substitute))
-        self.cnx.commit()
+        try:
+            self.cursor.execute(query_save, (substitute))
+            self.cnx.commit()
+            print("\n L'article a été enregistré avec succès!\n")
+        except connector.Error:
+            print("\n Il n'y a aucun produit à enregistrer!\n")
 
     def search_already_saved(self):
         """ Looks inside the database for previously saved products. """
