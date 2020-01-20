@@ -42,8 +42,8 @@ class Database:
                      ingredients FROM food "
                      "JOIN category "
                      "ON food.cat_id = category.category_id "
-                     "WHERE category.category = %s AND food.nutri_grade <= %s")
-        self.cursor.execute(query_sub, (category, 'b'))
+                     "WHERE category.category = %s AND food.nutri_grade < %s")
+        self.cursor.execute(query_sub, (category, 'c'))
         return self.cursor
 
     def save_a_product(self, substitute):

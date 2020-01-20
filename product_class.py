@@ -4,13 +4,18 @@ from variables import sub, payload, data, web_page, bar
 
 
 class Product:
+    """ Create an instance of a food object. This object is defined
+     by the elements given by the Database class. Methods can choose
+      and print the result in terminal. """
 
     def __init__(self, cursor):
 
         self.product = [elt for elt in cursor]
-        self.selection = []
 
     def print_product(self):
+        """ Among the products returned by the Database class, choose
+        ten food products of a given category and print them to the
+        screen. """
 
         print(bar, "\nVoici une sélection de 10 \
 produits correspondants à la catégorie choisie:\n")
@@ -24,6 +29,8 @@ produits correspondants à la catégorie choisie:\n")
         print("\n")
 
     def print_substitute(self):
+        """ Manages to split the result in attributes for the product
+        object. Print the result to the screen. """
 
         try:
             result = choice(self.product)
@@ -46,6 +53,7 @@ produits correspondants à la catégorie choisie:\n")
  produit sélectionné!\n")
 
     def print_saved(self):
+        """ Print to the screen the saved products returned by database. """
 
         if self.product:
             print("\n", " Voici les aliments que vous avez\

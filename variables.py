@@ -28,13 +28,7 @@ sub = "\nVoici un substitut plus sain au produit\
  les magasins: {}+\n+Liste des ingrédients:+{}+\n+Vous pouvez retrouver\
  toutes ces informations sur la page internet:+{}\n"
 
-food = "Sélectionnez l'aliment que vous voulez remplacer (1 à 10)"
-
-comments = ["Bienvenue dans l'application OpenFoodFacts !!!",
-            "(1) Sauvegarder, (2) Rechercher sur internet,\
- (3) Menu principal ",
-            " (1) pour Retourner au menu principal",
-            "Choisissez la categorie de l'aliment à remplacer"]
+back = "Appuyez sur 'Enter' pour revenir au menu principal.."
 
 data = ['product_name', 'brands', 'nutrition_grade_fr', 'url',
         'stores', 'ingredients_text']
