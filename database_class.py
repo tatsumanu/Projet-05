@@ -30,7 +30,7 @@ class Database:
         query_cat = ("SELECT name, brand, nutri_grade FROM food "
                      "JOIN category "
                      "ON food.cat_id = category.category_id "
-                     "WHERE category.category = %s AND nutri_grade > %s"
+                     "WHERE category.category = %s AND nutri_grade >= %s"
                      "LIMIT 100")
         self.cursor.execute(query_cat, (category, "c"))
         return self.cursor
